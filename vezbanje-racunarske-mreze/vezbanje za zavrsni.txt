@@ -1,0 +1,127 @@
+1.) Prevesti iz binarnog u decimalni: 
+00010101.11001110.00111111.11110011 = 21.206.63.243
+
+2.) Odrediti klase adresa 
+67.nesto klasa A
+170.nesto klasa B
+40.nesto klasa A
+42.nesto klasa A
+0.nesto klasa A
+
+***gleda se samo prvi(pocetni) oktet
+klasa A: opseg: od 0.0.0.0 do 127.255.255.255   (***bitovi pocinju sa 0)
+klasa B: opseg: od 128.0.0.0 do 191.255.255.255 (***bitovi pocinju sa 10)
+klasa C: opseg: od 192.0.0.0 do 223.255.255.255 (***bitovi pocinju sa 110)
+klasa D: opseg: od 224.0.0.0 do 239.255.255.255 (***bitovi pocinju sa 1110)
+klasa E: opseg: od 240.0.0.0 do 255.255.255.255 (***bitovi pocinju sa 1111)
+
+3.) Odrediti adresu mreze i emisionu adresu
+
+***uradimo operaciju AND nad ip konvertovanom i maskom konvertovanom u binarno i dobijemo NET IP.
+***BRC IP dobijamo tako sto gledamo gde su bile 0 u mreznoj masci i 0 na tim pozicijama menjamo u jedinice i dobijemo brc (menja se NET IP).
+
+adresa clana: 48.87.150.197/13
+
+NM: 11111111.11111000.00000000.00000000
+                AND
+ip adresa u bin.
+    00110000.01010111.10010110.11000101
+                 =
+NET IP: 00110000.01010111.00000000.00000000
+         48        .80       .0       .0
+BRC: 00110000.01010|111.11111111.11111111
+        48      .87       .255      .255
+
+adresa clana: 35.169.105.105/19
+NM: 11111111.11111111.11100000.00000000
+		AND
+IP: 00100011.10101001.01101001.01101001
+                 =
+NET IP: 00100011.10101001.01100000.00000000 
+           35     .169      .96      .0
+BRC IP: 00100011.10101001.011|11111.11111111
+         35         .169     .127     .255
+
+adresa clana: 164.155.242.40/26
+NM: 11111111.11111111.11111111.11000000
+		AND
+IP: 10100100.10011011.11110010.00101000
+                 =
+NET IP: 10100100.10011011.11110010.00000000
+   	  164	  .155      .242     .0
+BRC IP: 10100100.10011011.11110010.00|111111
+           164	  .155      .242     .63
+
+4.) Izracunati najveci moguci broj racunara u mrezama sa sledecim mreznim maskama
+
+***prvo NM pretvorimo u binarno
+***interesuje nas host deo, tj. vezane poslednje 0 u mreznoj masci, i racunamo 2^broj hostova(vezanih poslednjih 0)
+***- 2 ide obavezno jer su adrese rezervisane za adresu mreze i emisionu
+
+NM: 255.255.255.192 = 11111111.11111111.11111111.11|000000
+resenje: 2^6 - 2 = 64 - 2 = 62  
+
+NM: 255.255.255.0 = host je samo poslednji oktet 00000000 (znamo da je 255 = 11111111)
+resenje 2^8 - 2 = 256 - 2 = 254
+
+NM: 255.255.252.0 = 111111|00.00000000 host = 10
+resenje: 2^10 - 2 = 1024 - 2 = 1022
+
+NM: 255.255.255.252 = 111111|00	host = 2
+resenje: 2^2 - 2 = 4 - 2 = 2
+
+NM: 255.255.128.0 = 1|0000000.00000000 host = 15
+resenje 2^15 - 2 = 32768 - 2 32766
+
+5.) Adrese racunara sa javnim internet adresama
+
+***mora napamet iz knjige, ako se ispostavi da je je adresa mreze ili brc adresa, 
+automatski otpada ne moze se koristiti za adresiranje
+***moguce resenje bi bilo: gledaju se poslednje dve cifre, u poslednjem oktetu kad se pretvore u binarni, ako se zavrsava na 00 i 11
+oznacimo NE, ako je 01 i 10 oznacimo DA. (ovakvo resenje moze biti tacno ali i ne mora)
+
+6.) Lokalne i udaljene mreze. Da li su dve adrese u istoj mrezi. 
+
+***ako im je isti NET IP onda jesu, ako nije onda nisu
+Resenje: prosto uradimo AND kao u prethodnim zadacima, izracunamo NET IP za prvu i NET IP za drugu i uporedimo ih
+
+NM: 255.128.0.0
+Mreza1: 183.5.69.183
+         AND NM = NET IP1
+Mreza2: 183.95.7.112
+         AND NM = NET IP2
+
+resenje: NET IP1 = NET IP2 --> ista mreza, NET IP1 != NET IP2 --> nisu ista mreza
+
+7.) Projekat podmrezavanja, dat je inicijalni mrezni opseg 40.85.79.0/24 i date su podmreze i clanovi
+
+****redosled podmreza treba postaviti po hostovima (od najveceg ka najmanjem)
+***za prvi subnet, ip je inicijalni mrezni opseg.
+***NM dobijemo: koliki je stepen broja 2 = 124 pa - 2, to je 7. Onda od 32 oduzmemo 7 i dobijemo da je NM /25 (25 jedinica i ostalo 0)
+***BRC se racuna isto kao u prethodnim (gledamo gde su 0 unutar mrezne maske i u net ip te pozicije menjamo u 1)
+
+***adresa sledece podmreze se dobija tako sto se uveca BRC prethodne mreze za 1 (binarno!)
+
+
+subnet1: 124
+NET IP: 40.85.79.0/24 = 00101000.01010101.01001111.00000000
+124: 2^7 - 2 = 126
+NM = 32 - 7 = /25
+NM: 11111111.11111111.11111111.1|0000000 = 255.255.255.128
+BRC: 00101000.01010101.01001111.0|0000000 = 00101000.01010101.01001111.0|1111111 = 40.85.79.127
+ 						
+subnet2: 19
+NET IP: 40.85.79.01111111 + 1 = 40.85.79.10000000 = 40.85.79.128
+19: 2^5 - 2 = 32 - 2 = 30
+NM = 32 - 5 = /27
+NM: 11111111.11111111.11111111.111|00000 = 255.255.255.224
+BRC: 40.85.79.100|11111 = 40.85.79.159
+
+subnet3: 9
+NET IP: 40.85.79.10011111 + 1 = 40.85.79.10100000 = 40.85.79.160
+9: 2^4 - 2 = 16 - 2 = 14
+NM: 32 - 4 = 28
+NM: 11111111.11111111.11111111.1111|0000 = 255.255.255.240
+BRC: 40.85.79.1010|1111 = 40.85.79.175
+
+zzz
